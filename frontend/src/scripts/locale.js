@@ -1,7 +1,7 @@
 (function () {
   var availableLangs = [];
   var defaultLang = null;
-  var langs = (navigator.languages || [navigator.language]).map(
+  var browserLangs = (navigator.languages || [navigator.language]).map(
     function(l) { return l.toLowerCase() });
   var metas = Array.from(
     document.head.querySelectorAll('meta[name="availableLanguages"],meta[name="defaultLanguage"]')
@@ -25,10 +25,20 @@
   }
 
   function bestLang() {
-    for (var i = 0; i < langs.length; i++) {
-      var l = langs[i];
+    for (var i = 0; i < browserLangs.length; i++) {
+      var l = browserLangs[i];
       if (availableLangs.indexOf(l) > -1) {
         return l;
+      }
+
+      if(l.length === 2) {
+        var firstAvailableLangMatchingBaseCountryCode = availableLangs.find(function(lang) {
+          return lang.substring(0, 2) === l;
+        });
+
+        if(firstAvailableLangMatchingBaseCountryCode) {
+          return firstAvailableLangMatchingBaseCountryCode;
+        }
       }
     }
     return defaultLang;
